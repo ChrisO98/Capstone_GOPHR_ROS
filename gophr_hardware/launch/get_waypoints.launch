@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<launch>
+   
+  <!-- Used to create waypoints from a loaded map and save it into a .csv file -->
+  <!-- run the waypoint_saver.py in another terminal, "rosrun gophr_hardware waypoint_saver.py" -->
+  <!-- when done with your first waypoint data set, end the waypoint_saver.py with ctrl+c -->
+  <!-- edit the .csv file in user_interface/saved_waypoints and rename it with a 1 at the end -->
+  
+  <!-- The more data sets created would need to be updated with each corresponding room number -->
+  <!-- The main.py file in user_interface will need to be updated for each waypoint data and its corresponding room number -->
+  
+  <!-- Load Map Data -->
+  <arg name="map_file" default="$(find gophr_hardware)/maps/tom3.yaml"/> <!-- tom2.yaml -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find gophr_hardware)/urdf/gophr_robot.xacro'" />
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="False"/>
+  </node>
+    
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+		
+  <!-- Start RPLIDAR sensor node which provides LaserScan data  -->
+  <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+    <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
+    <param name="serial_baudrate" type="int" value="115200"/>
+    <param name="frame_id" type="string" value="laser"/>
+    <param name="inverted" type="bool" value="false"/>
+    <param name="angle_compensate" type="bool" value="true"/>
+    <param name="time_increment" type="int" value="0"/>
+  </node>
+  
+  <!-- Use Real Time -->
+  <param name="/use_sim_time" value="false"/>
+  
+  <!-- Run AMCL and it creates map transform -->
+  <include file="$(find gophr_hardware)/nav/launch/amcl.launch"/>
+  
+  <!-- Uses extened kalman filter to create odom transform by receiving data from odom topic -->
+  <include file="$(find gophr_hardware)/nav/launch/robot_pose_ekf.launch"/>
+  
+  <!-- laser_scan_matcher uses lidar to publish odometry to the robot_pose_ekf package -->
+  <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" 
+    name="laser_scan_matcher_node" output="screen">
+
+    <param name="fixed_frame" value = "odom"/>
+    <param name="base_frame" value="base_footprint"/>
+    <param name="max_iterations" value="10"/>
+
+  </node>
+  
+  <!-- Run odom node ( do not run as this is currently not working over uart, may fix later ) -->
+  <!--<node name="robot" pkg="gophr_hardware" type="odom_pub.py"/>-->
+  
+  <!-- run move_base -->
+  <include file="$(find gophr_hardware)/nav/launch/move_base.launch"/>
+  
+  <!-- run rviz -->  
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find gophr_hardware)/rviz/config/lidar_hector.rviz"/>
+   
+    
+</launch>
