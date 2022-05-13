@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="gophr"> 
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="mass" value="1" /> <!-- arbitrary value for mass -->
+  <xacro:property name="chassmass" value="20.4" /> <!-- chassis mass -->
+
+  <xacro:property name="wheelmass" value="2" /> <!-- wheel mass 0.1905088-->
+  
+  <xacro:property name="width" value="0.762" /> <!-- Base_Link square -->
+  <xacro:property name="height1" value="0.1016" /> <!-- Base_Link -->
+  
+  <xacro:property name="height2" value="0.139954" /> <!-- legs height -->
+
+  <xacro:property name="width4" value="0.044" /> <!-- wheel width 0.0254 -->
+  <xacro:property name="radial" value="0.0508" /> <!-- wheel radius 0.1016 -->
+  
+  <xacro:property name="width5" value="0.1524" /> <!-- laser guess width -->
+  <xacro:property name="width2" value="0.1397" /> <!-- laser inertial -->
+  <xacro:property name="height5" value="0.01" /> <!-- laser guess height -->
+  
+  
+  <!-- fix moving robot in rviz since 2d nav now works :) and only moves robot in gazebo-->
+ 
+  
+  <!-- start with base_link for xacro conversion -->
+  
+  <!--<link name="map">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+  </link>-->
+
+  <!-- odom -->
+  <!--<joint name="map2odom" type="fixed">
+    <parent link="map"/>
+    <child link="odom"/> 
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>-->
+  
+  <!-- used to be odom -->
+  <link name="base_footprint">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.00 0.00 0.00"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <!--<gazebo reference="base_footprint">
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>-->
+  
+  <!-- base_footprint --> <!-- used to be odom -->
+  <joint name="base_footprint2base_link" type="fixed"> <!-- fixed floating -->
+    <parent link="base_footprint"/> <!-- odom -->
+    <child link="base_link"/>
+    <origin rpy="0 0 0" xyz="0 0 ${height1*0.5}"/>
+  </joint>
+  
+  <!--<link name="base_footprint">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="base_footprint2base_stabilized" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_stabilized"/>
+    <origin rpy="0 0 0" xyz="0 0 ${height1}"/>
+  </joint>
+  
+  <link name="base_stabilized">  aka base_stabilized, I think 
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="base_stabilized2base_link" type="fixed">  fixed floating 
+    <parent link="base_stabilized"/>
+    <child link="base_link"/>
+    <origin rpy="0 0 0" xyz="0 0 ${height1*0.5}"/>
+  </joint>-->
+
+  							<!-- Robot Chassis -->
+  <link name="base_link">
+    <visual>
+      <origin rpy="0 0 ${-PI/2}" xyz="0 0 0"/> <!-- only a visual of where the object will look like being placed but does not full refelct the joint origin, also for collision-->
+      <geometry>
+        <mesh filename="package://gophr_hardware/stl/SimplifiedBaseSwerveNoWheels.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 ${-PI/2}" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://gophr_hardware/stl/SimplifiedBaseSwerveNoWheels.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${height1/2}" rpy="0 0 0"/>
+      <mass value="${chassmass}"/>
+      <inertia
+	  ixx="${chassmass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${chassmass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${chassmass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+  </link>
+  
+      							<!-- Back Right Wheel -->
+  
+  <link name="back_right_wheel">
+    <visual>
+      <origin rpy="${PI/2} 0 0" xyz="0 0 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin rpy="${PI/2} 0 0" xyz=" 0 0 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${width4/2}" rpy="0 0 0"/>
+      <mass value="${wheelmass}"/>
+      <inertia
+	  ixx="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" ixy="0.0" ixz="0.0"
+	  iyy="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" iyz="0.0"
+	  izz="${wheelmass * radial * radial / 2}"/>
+    </inertial>
+  </link>
+
+  <joint name="back_right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="back_right_wheel"/>
+    <origin xyz="-0.22 -0.222 ${-height1+0.015}"/> <!-- -0.2 0 -0.433 , 0 0 -0.135-->
+    <axis xyz="0 1 0"/>
+  </joint>
+ 
+      							<!-- Front Right Wheel -->
+  
+  <link name="front_right_wheel">
+    <visual>
+      <origin rpy="${PI/2} 0 0" xyz="0 -0.003 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin rpy="${PI/2} 0 0" xyz=" 0 0 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${width4/2}" rpy="0 0 0"/>
+      <mass value="${wheelmass}"/>
+      <inertia
+	  ixx="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" ixy="0.0" ixz="0.0"
+	  iyy="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" iyz="0.0"
+	  izz="${wheelmass * radial * radial / 2}"/>
+    </inertial>
+  </link>
+
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_right_wheel"/>
+    <origin xyz="0.22 -0.222 ${-height1+0.015}"/> <!-- -0.2 0 -0.433 , 0 0 -0.135-->
+    <axis xyz="0 1 0"/>
+  </joint>
+  
+ 
+  
+      							<!-- Front Left Wheel -->
+  
+  <link name="front_left_wheel">
+    <visual>
+      <origin rpy="${PI/2} 0 0" xyz="0 -0.003 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin rpy="${PI/2} 0 0" xyz=" 0 0 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${width4/2}" rpy="0 0 0"/>
+      <mass value="${wheelmass}"/>
+      <inertia
+	  ixx="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" ixy="0.0" ixz="0.0"
+	  iyy="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" iyz="0.0"
+	  izz="${wheelmass * radial * radial / 2}"/>
+    </inertial>
+  </link>
+
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_left_wheel"/>
+    <origin xyz="0.22 0.222 ${-height1+0.015}"/> <!-- -0.2 0 -0.433 , 0 0 -0.135-->
+    <axis xyz="0 1 0"/>
+  </joint>
+  
+    
+  
+      							<!-- Back left Wheel -->
+  
+  <link name="back_left_wheel">
+    <visual>
+      <origin rpy="${PI/2} 0 0" xyz="0 -0.003 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin rpy="${PI/2} 0 0" xyz=" 0 0 0"/>
+      <geometry>
+        <!--<mesh filename="package://gophr/stl/MK4_Wheel.stl" scale="0.001 0.001 0.001"/>-->
+        <cylinder length="${width4}" radius="${radial}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${width4/2}" rpy="0 0 0"/>
+      <mass value="${wheelmass}"/>
+      <inertia
+	  ixx="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" ixy="0.0" ixz="0.0"
+	  iyy="${wheelmass / 12.0 * (3*radial*radial + width4*width4)}" iyz="0.0"
+	  izz="${wheelmass * radial * radial / 2}"/>
+    </inertial>
+  </link>
+
+  <joint name="back_left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="back_left_wheel"/>
+    <origin xyz="-0.22 0.222 ${-height1+0.015}"/> <!-- -0.2 0 -0.433 , 0 0 -0.135-->
+    <axis xyz="0 1 0"/>
+  </joint>
+  
+
+  							<!-- Laser -->
+
+  <link name="laser">
+    <visual>
+      <origin rpy="0 0 ${3.14159}" xyz="0 0 0"/>
+      <geometry> 
+        <mesh filename="package://gophr_hardware/stl/RpLidar.stl" scale="0.001 0.001 0.001"/> 
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 ${3.14159}" xyz="0 0 0"  /> <!-- <origin rpy="0 0 -1.5708" xyz="0.242 0.084 -0.098"-->
+      <geometry> 
+        <mesh filename="package://gophr_hardware/stl/RpLidar.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.021" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width5*width5 + 0.042*0.042)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (0.042*0.042 + width2*width2)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width5*width5 + width5*width5)}"/>
+    </inertial>
+  </link>
+  
+  <joint name="base_2_laser" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser"/>
+    <origin rpy="0 0 ${3.14159}" xyz="0 0 0.2"/> <!-- 3.14159 0.37 0 0.04 -->
+  </joint>
+  
+  <!-- IMU link on base_link-->
+  <link name="imu_link">
+  </link>
+  <joint name="base_to_imu" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+  
+  							<!-- Tansmissions -->
+  
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_right_wheel_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <transmission name="tran2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="back_right_wheel_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <transmission name="tran3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_left_wheel_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <transmission name="tran4">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="back_left_wheel_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+    <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find gophr_hardware)/urdf/gazebo.xacro" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find gophr_hardware)/urdf/materials.xacro" />
+
+</robot>
