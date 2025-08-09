@@ -3,7 +3,8 @@ Texas A&M - Senior capstone project code of the mobile robot GOPHR (Ground Opera
 
 This repository contains the top portion of GOPHR code; The bottom portion of GOPHR (chassis) was handled by my teammates.
 
-GOPHR's ROS files. These files were used on a Raspberry Pi 4 4gb running Ubuntu 20.04 LTS with a installment of Ubuntu Desktop using tasksel and LightDM, and ROS Noetic.
+GOPHR's ROS (Robot Operating System) files.<br>
+These files were used on a Raspberry Pi 4 4gb running Ubuntu 20.04 LTS with a installment of Ubuntu Desktop using tasksel and LightDM, and ROS Noetic.
 
 Download and place the 'froze_east_text_detection.pb' file into gophr_hardware/scripts
 https://github.com/oyyd/frozen_east_text_detection.pb
