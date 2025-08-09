@@ -10,4 +10,4 @@ https://github.com/oyyd/frozen_east_text_detection.pb
 
 Make sure to enable UART2 and SPI on the Raspberry Pi 4 with Ubuntu
 
-Link to the complete work of the top portion of the project - [https://github.com/ChrisO98/GOPHR_Simulation-Hardware/tree/main](https://github.com/ChrisO98/GOPHR_Simulation-Hardware)
+Link to the simulation work of the top portion of the project - [https://github.com/ChrisO98/GOPHR_Simulation](https://github.com/ChrisO98/GOPHR_Simulation)
