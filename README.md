@@ -9,3 +9,5 @@ Download and place the 'froze_east_text_detection.pb' file into gophr_hardware/s
 https://github.com/oyyd/frozen_east_text_detection.pb
 
 Make sure to enable UART2 and SPI on the Raspberry Pi 4 with Ubuntu
+
+Link to the entire project - https://github.com/ChrisO98/GOPHR_Simulation-Hardware/tree/main
