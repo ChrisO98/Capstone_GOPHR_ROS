@@ -8,5 +8,4 @@ https://github.com/oyyd/frozen_east_text_detection.pb
 
 Make sure to enable UART2 and SPI on the Raspberry Pi 4 with Ubuntu
 
-This repository handles the top portion of GOPHR
-The bottom portion of GOPHR (chassis) was not handled by me.
+This repository handles the top portion of GOPHR; The bottom portion of GOPHR (chassis) was not handled by me.
