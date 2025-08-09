@@ -1,4 +1,4 @@
-# Capstone_GOPHR
+# Capstone_GOPHR_ROS
 Texas A&M - Senior capstone project code of the mobile robot GOPHR (Ground Operating Patient Helper Robot).
 
 This repository contains the top portion of GOPHR code; The bottom portion of GOPHR (chassis) was handled by my teammates.
